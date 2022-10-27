@@ -1,0 +1,27 @@
+import re
+marks=input().split()
+marks.sort(reverse=True) #把關鍵字放進list中並按照關鍵字的長度由大到小
+total_s="" #最後要一起印出來的string
+while True: 
+    s=input()
+    if s=="end":  #當輸入end就停止
+        break
+    else:      
+        d={}  #創一個字典把文句中遇到有關鍵字的index丟進字典中
+        for m in marks: 
+            indices=[i.start() for i in re.finditer(m,s)]
+            d[m]=indices
+            s=s.replace(m, "*"*len(m)) #逐一把文句中的關鍵字帶換成*
+        def return_key(val,d): #這邊先建一個函數，遇到value回傳key
+            for k, v  in d.items():
+                if val in v:
+                    return k
+        total_index=[x for sublist in list(d.values()) for x in sublist] #從字典中撈出所有的index形成一個list在按照index大小由小排到大
+        total_index.sort()
+        a=0
+        for id in total_index: #按照index小到大的順序逐一代換關鍵字，因為每多換一個關鍵字index就會多2，所以建了一個a的變數累加2
+            key=return_key(id, d)
+            s=s[:(id+a)]+"「"+key+"」"+s[id+a+len(key):]
+            a+=2
+        total_s=total_s+s+"\n" #把更新過的s加入total_s最後再一起印出來
+print(total_s)
