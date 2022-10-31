@@ -1,0 +1,53 @@
+#建立每個人擁有甚麼物品的字典
+Td=int(input())/100
+d={}
+name_lst=[] #按順序的人名
+item_lst=[] #所有物品
+while True:
+    s=input()
+    if s=="end":
+        break
+    else:
+        s=s.split()
+        d[s[0]]=set(s[1:])
+        name_lst.append(s[0])
+        item_lst+=s[1:]
+    item_lst=list(dict.fromkeys(item_lst))
+print(d)
+
+d1={}
+for a,b in enumerate(item_lst):
+    d1[b]=a
+new_lst=[]
+for i in range(1, len(name_lst)):  
+    new_lst+= zip(name_lst[:-i], name_lst[i:])   
+new_lst = [list(item) for item in new_lst]  
+print(new_lst)
+recommend_d={}
+for i in new_lst:
+    s1=d[i[0]]
+    s2=d[i[1]]
+    s1s2alike=len(s1&s2)/len(s1)
+    s2s1alike=len(s1&s2)/len(s2)
+    if s1s2alike>=Td:
+        recommend1=(s2-s1)
+    else:
+        recommend1=set()
+    print("{}-{}相似程度={}, 推薦{}".format(i[0],i[1],s1s2alike, recommend1))
+    if i[0] not in recommend_d:
+         recommend_d[i[0]]=set()
+    recommend_d[i[0]].update(recommend1)
+    if  s2s1alike>=Td:
+        recommend2=(s1-s2)
+    else:
+        recommend2=set()
+    print("{}-{}相似程度={}, 推薦{}".format(i[1],i[0],s2s1alike, recommend2))
+    if i[1] not in recommend_d:
+        recommend_d[i[1]]=set()
+    recommend_d[i[1]].update(recommend2) 
+print(recommend_d)
+print(d1)
+for name in name_lst:
+    l1=list(recommend_d[name])
+    l1.sort(key=lambda x:d1[x])
+    print(name+" "+" ".join(l1))
