@@ -1,0 +1,51 @@
+Td=int(input())/100 #閾值
+d={}
+name_lst=[] #按順序的人名
+item_lst=[] #所有物品
+while True:
+    s=input()
+    if s=="end":
+        break
+    else:
+        s=s.split()
+        d[s[0]]=set(s[1:]) #建立每個人擁有甚麼物品的字典
+        name_lst.append(s[0]) 
+        item_lst+=s[1:]
+    item_lst=list(dict.fromkeys(item_lst)) #所有物品(不重複)
+
+#這段是為了之後用set會打亂原本的順序而設計的，可以按照item_lst排回原本的順序，因此建立了d1這個字典
+d1={}
+for a,b in enumerate(item_lst):
+    d1[b]=a
+    
+#這一大段是為了取出兩個兩個配對的人互相看缺少或多了什麼東西，以測資為例共會有6種結果
+new_lst=[]
+for i in range(1, len(name_lst)):  
+    new_lst+= zip(name_lst[:-i], name_lst[i:])   
+new_lst = [list(item) for item in new_lst]  
+
+
+recommend_d={} #累加每個人所需要額外被推薦的東西
+for i in new_lst:
+    s1=d[i[0]] #s1是第一個人所擁有物品的集合
+    s2=d[i[1]] #s2是第二個人所擁有物品的集合
+    s1s2alike=len(s1&s2)/len(s1) #s1s2alike表示第一個人跟第二個人的相似程度
+    s2s1alike=len(s1&s2)/len(s2) #s2s1alike表示第二個人跟第一個人的相似程度
+    if s1s2alike>=Td:
+        recommend1=(s2-s1) #recommend1存入第二個人比第一個人多那些東西
+    else:
+        recommend1=set() 
+    if i[0] not in recommend_d:
+         recommend_d[i[0]]=set()
+    recommend_d[i[0]].update(recommend1)
+    if  s2s1alike>=Td:
+        recommend2=(s1-s2) #recommend2存入第二個人比第一個人多那些東西
+    else:
+        recommend2=set()
+    if i[1] not in recommend_d:
+        recommend_d[i[1]]=set()
+    recommend_d[i[1]].update(recommend2) 
+for name in name_lst:
+    l1=list(recommend_d[name])
+    l1.sort(key=lambda x:d1[x])   #最後再按照原本input的順序印出來
+    print(name+" "+" ".join(l1))
